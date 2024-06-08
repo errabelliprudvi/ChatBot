@@ -55,6 +55,7 @@ class MainActivity : ComponentActivity() {
         val mainViewModel = MVmodel
         mainViewModel.adduserName(userName.trim())
       adminuser = userName.trim()
+        
         //mainViewModel.load(userName.trim())
 
         webSocketClient =WebSocketClient(MyWebSocketListener())
