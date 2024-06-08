@@ -18,7 +18,7 @@ import okhttp3.WebSocket
 
 class MainActivity : ComponentActivity() {
     private  lateinit var webSocketClient: WebSocketClient
-private lateinit var adminuser: String
+   private lateinit var adminuser: String
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -64,7 +64,7 @@ private lateinit var adminuser: String
     }
 
     override fun onDestroy() {
-        webSocketClient.disconnect()
+
         super.onDestroy()
 
     }
