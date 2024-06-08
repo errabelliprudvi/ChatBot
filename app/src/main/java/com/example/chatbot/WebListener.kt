@@ -3,6 +3,7 @@ package com.example.chatbot
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -12,12 +13,13 @@ import okio.ByteString
 import java.net.Socket
 import java.time.LocalDateTime
 
-class MyWebSocketListener : WebSocketListener() {
+class MyWebSocketListener (): WebSocketListener() {
     companion object {
 
     private var TAG = "MyWebSocketListener"
     private lateinit var websocket: WebSocket
 
+        @OptIn(DelicateCoroutinesApi::class)
         fun sendMes(me:String){
             GlobalScope.launch {
                 websocket.send(me)
@@ -44,14 +46,18 @@ class MyWebSocketListener : WebSocketListener() {
                 var user = lst[0].replace("Message from ", "").trim()
 
                 if (lst.size == 2) {
+
+                    // MVmodel.addMessage(CMessage(lst[1], "text", LocalDateTime.now(), 0))
+                    MVmodel.addMessageMap(user, CMessage(lst[1], "text", LocalDateTime.now(), 0))
+
                     if (!MVmodel.displayUsers.contains(user)) {
                         MVmodel.addDisplayUser(user)
                     }
-                    // MVmodel.addMessage(CMessage(lst[1], "text", LocalDateTime.now(), 0))
-                    MVmodel.addMessageMap(
-                        user,
-                        CMessage(lst[1], "text", LocalDateTime.now(), 0)
-                    )
+                    if(MVmodel.userName.value!=user){
+                        MVmodel.increaseUnSeenMessageCount(user)
+                    }
+
+
                 }
             }
         }
@@ -71,9 +77,10 @@ class MyWebSocketListener : WebSocketListener() {
     }
 
     override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
-        //super.onFailure(webSocket, t, response)
+       // super.onFailure(webSocket, t, response)
         println("WebSocket Connection Failed: ${t.message}")
         Log.d("websocket","${t.message}")
+
     }
 
 

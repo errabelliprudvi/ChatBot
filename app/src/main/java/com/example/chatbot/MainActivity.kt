@@ -7,21 +7,19 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import com.example.chatbot.ui.theme.ChatBotTheme
-import okhttp3.*
 import okhttp3.OkHttpClient
-import okhttp3.Request
 import okhttp3.WebSocket
 
 class MainActivity : ComponentActivity() {
-private lateinit var webSocket: WebSocket
-private val client =OkHttpClient()
+    private  lateinit var webSocketClient: WebSocketClient
+private lateinit var adminuser: String
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,14 +40,6 @@ private val client =OkHttpClient()
             finish()
             return
         }
-        val mainViewModel = MVmodel
-        mainViewModel.adduserName(userName.trim())
-        //mainViewModel.load(userName.trim())
-
-
-        val request =Request.Builder().url("ws://13.200.235.181:8080/WebChat/chat").build()
-        val listener =MyWebSocketListener()
-        webSocket = client.newWebSocket(request, listener)
 
         setContent {
             ChatBotTheme {
@@ -58,17 +48,32 @@ private val client =OkHttpClient()
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                MainScreen()
+                    MainScreen()
                 }
             }
         }
+        val mainViewModel = MVmodel
+        mainViewModel.adduserName(userName.trim())
+      adminuser = userName.trim()
+        //mainViewModel.load(userName.trim())
 
+        webSocketClient =WebSocketClient(MyWebSocketListener())
+        webSocketClient.connect("ws://13.200.235.181:8080/WebChat/chat")
 
 
     }
 
+    override fun onDestroy() {
+        webSocketClient.disconnect()
+        super.onDestroy()
 
+    }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onResume() {
+        MVmodel.adduserName(adminuser)
+        super.onResume()
+    }
 }
 
 

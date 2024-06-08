@@ -32,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -54,6 +55,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.LiveData
 import com.example.chatbot.ui.theme.ChatBotTheme
 import com.example.chatbot.ui.theme.Detail
 import  androidx.lifecycle.viewmodel.compose.viewModel
@@ -135,9 +137,11 @@ fun MainScreenContainer(modifier: Modifier,) {
     val viewModel = MVmodel
     val showImageOverlay = viewModel.dpStatus.observeAsState()
    val stateValue :Boolean? =showImageOverlay.value
-    val users:List<String> = viewModel.displayUsers
+    //val users:List<String> = viewModel.displayUsers
 
 
+
+    val users by remember { mutableStateOf(viewModel.displayUsers) }
     var addUserState by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
 
@@ -153,6 +157,9 @@ fun MainScreenContainer(modifier: Modifier,) {
             }
 
         }
+
+
+
         AnimatedVisibility(
             visible = addUserState,
             enter = fadeIn(),
@@ -257,9 +264,12 @@ fun MainScreenContainer(modifier: Modifier,) {
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun UserDetailsBox(str:String){
-    //val text by remember { mutableStateOf(str) }
+    val text by remember { mutableStateOf(str) }
     val viewModel=MVmodel
     val context = LocalContext.current
+
+    //val unCount by remember { mutableStateOf(viewModel.unseenMessagesCount[text]?.value) }
+    val unCount = viewModel.unseenMessagesCount[str]?.observeAsState(0)
 
 
     Row (modifier = Modifier
@@ -294,23 +304,25 @@ fun UserDetailsBox(str:String){
                 },
             color = Color.Black,
             textAlign = TextAlign.Left,
-            fontSize = TextUnit(25f, TextUnitType.Sp),
+            fontSize = TextUnit(30f, TextUnitType.Sp),
             fontFamily = FontFamily.Cursive,
             fontWeight = FontWeight.Bold,
             maxLines =1)
 
         Box (modifier = Modifier
-            .size(30.dp)
+
             .background(Color.Transparent, RoundedCornerShape(30.dp))
             .padding(end = 10.dp), Alignment.Center){
-            Text(text = "",
-                modifier= Modifier
-                    .padding(start = 5.dp),
-                color = Color.Black,
-                fontSize = TextUnit(20f, TextUnitType.Sp),
-                fontFamily = FontFamily.Cursive,
-                fontWeight = FontWeight.Bold,
-                maxLines =1)
+            if (unCount != null&&unCount.value!=0) {
+                Text(text = unCount.value.toString(),
+                    modifier= Modifier
+                        .padding(start = 5.dp),
+                    color = Color.Black,
+                    fontSize = TextUnit(20f, TextUnitType.Sp),
+                    fontFamily = FontFamily.Cursive,
+                    fontWeight = FontWeight.Bold,
+                    maxLines =1)
+            }
         }
     }
 

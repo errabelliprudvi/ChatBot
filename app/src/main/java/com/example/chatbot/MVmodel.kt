@@ -69,6 +69,10 @@ class MVmodel: ViewModel() {
         private val _messagesHandler: MutableMap<String, MutableLiveData<List<CMessage>>> = mutableStateMapOf()
         val messagesHandler: Map<String, LiveData<List<CMessage>>> = _messagesHandler
 
+        private val _unseenMessagesCount: MutableMap<String, MutableLiveData<Int>> = mutableStateMapOf()
+        val unseenMessagesCount: Map<String, LiveData<Int>> get() = _unseenMessagesCount
+
+
         /* private val _messagesHandler: MutableMap<String,MutableList<CMessage>> = mutableStateMapOf()
           var messagesHandler: Map<String,List<CMessage>>  = _messagesHandler
 */
@@ -126,6 +130,21 @@ class MVmodel: ViewModel() {
             messagesLiveData.value = updatedMessages
             _messagesHandler[name] = messagesLiveData
             // _messagesHandler[name]!!.add(cMessage)
+
+        }
+        fun increaseUnSeenMessageCount(name:String){
+
+            _unseenMessagesCount.putIfAbsent(name,MutableLiveData(0))
+            val countLiveData = _unseenMessagesCount[name]?:MutableLiveData()
+            val currentCount = countLiveData.value
+            val updatedCount = currentCount!! + 1
+            countLiveData.value = updatedCount
+            _unseenMessagesCount[name]= countLiveData
+        }
+        fun clearUnSeenMessageCount(name:String){
+            if(_unseenMessagesCount.contains(name)){
+                _unseenMessagesCount.remove(name)
+            }
 
         }
 
