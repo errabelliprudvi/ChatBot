@@ -26,6 +26,7 @@ class ChatActivity : ComponentActivity() {
             mainViewModel.adduserName(userName.trim())
            // mainViewModel.readMessage()
             mainViewModel.clearUnSeenMessageCount(userName.trim())
+
         }
         setContent {
             ChatBotTheme {

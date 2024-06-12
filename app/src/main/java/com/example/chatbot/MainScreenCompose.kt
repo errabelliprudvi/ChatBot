@@ -1,5 +1,6 @@
 package com.example.chatbot
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -88,8 +89,9 @@ Text(text = "ChatBot",
         .weight(.2f)
         .padding(start = 5.dp),
     color = Color.Black,
-    fontSize = TextUnit(25f, TextUnitType.Sp),
-    fontFamily = FontFamily.Cursive,
+    fontSize = TextUnit(30f, TextUnitType.Sp),
+    fontFamily = FontFamily.Default,
+    fontWeight = FontWeight.Bold,
     maxLines =1)
 
         Image(
@@ -137,6 +139,7 @@ fun MainScreenContainer(modifier: Modifier,) {
     val viewModel = MVmodel
     val showImageOverlay = viewModel.dpStatus.observeAsState()
    val stateValue :Boolean? =showImageOverlay.value
+    var context = LocalContext.current
     //val users:List<String> = viewModel.displayUsers
 
 
@@ -144,12 +147,16 @@ fun MainScreenContainer(modifier: Modifier,) {
     val users by remember { mutableStateOf(viewModel.displayUsers) }
     var addUserState by remember { mutableStateOf(false) }
     var text by remember { mutableStateOf("") }
+    var textDemo by remember { mutableStateOf("") }
 
 
 
 
 
-    Box {
+    Box (modifier = Modifier.pointerInput(Unit) {
+        detectTapGestures { if(addUserState){addUserState=false
+        text=""} }
+    }){
         Column(modifier = modifier) {
             // repeat(5) { UserDetailsBox("Prudvi") }
             users.forEach {
@@ -180,37 +187,55 @@ fun MainScreenContainer(modifier: Modifier,) {
                         .height(100.dp),
                 ) {
                     Text(
-                        text = "Enter UserName to Add",
+                        text =textDemo,
                         modifier = Modifier
                             .weight(.5f)
                             .padding(start = 5.dp),
                         color = Color.Black,
                         textAlign = TextAlign.Left,
                         fontSize = TextUnit(25f, TextUnitType.Sp),
-                        fontFamily = FontFamily.Cursive,
+                        fontFamily = FontFamily.Default,
                         fontWeight = FontWeight.Bold,
                         maxLines = 1
                     )
 
                     BasicTextField(
                         modifier = Modifier
-                            .weight(.5f),
+                            .weight(1f)
+                            .fillMaxWidth(1f),
                         value = text, onValueChange = { text = it }, singleLine = true,
                         textStyle = TextStyle(
                             color = Color.Black, fontSize = TextUnit(25f, TextUnitType.Sp),
-                            fontFamily = FontFamily.Cursive,
+                            fontFamily = FontFamily.Default,
                             fontWeight = FontWeight.Bold,
                         ),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Text,
-                            imeAction = ImeAction.Send
+                            imeAction = ImeAction.Done
                         ),
-                        keyboardActions = KeyboardActions(onSend = {
-                            if (!viewModel.displayUsers.contains(text.trim())) {
-                                viewModel.addDisplayUser(text.trim())
+                        keyboardActions = KeyboardActions(onDone = {
+                            if(textDemo == "Enter UserName to Add"){
+                                if (!viewModel.displayUsers.contains(text.trim())) {
+                                    viewModel.addDisplayUser(text.trim())
+                                    DbOperations.insertUser(text.trim())
+                                }
+                                addUserState = false
+                                text = ""
                             }
-                            addUserState = false
-                            text = ""
+                            else{
+                                val sharedPref = context.getSharedPreferences("ChatBot", Context.MODE_PRIVATE)
+                                with(sharedPref.edit()) {
+                                    putString("serverAddress","ws://"+text.trim()+"/WebChat/chat")
+                                    apply()
+
+                                    val intent = Intent(context, MainActivity::class.java).also {
+                                        it.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                    context.startActivity(intent)
+                                    Runtime.getRuntime().exit(0)
+                                }
+                            }
+
                         })
                     )
 
@@ -253,7 +278,24 @@ fun MainScreenContainer(modifier: Modifier,) {
                 .offset(350.dp, 750.dp)
                 .size(55.dp)
                 .clip(CircleShape)
-                .clickable { addUserState = true },
+                .clickable {textDemo="Enter UserName to Add"
+                    addUserState = true }
+                .pointerInput(Unit) {
+                    detectTapGestures(
+                        onTap = {
+                            textDemo="Enter UserName to Add"
+                            addUserState = true
+                        },
+                        onLongPress = {
+
+                                textDemo="Enter server address "
+                                addUserState = true
+
+                            //isLongPressed = true
+
+                        }
+                    )
+                },
             contentDescription = stringResource(id = R.string.dog_content_description)
         )
     }
@@ -305,7 +347,7 @@ fun UserDetailsBox(str:String){
             color = Color.Black,
             textAlign = TextAlign.Left,
             fontSize = TextUnit(30f, TextUnitType.Sp),
-            fontFamily = FontFamily.Cursive,
+            fontFamily = FontFamily.Default,
             fontWeight = FontWeight.Bold,
             maxLines =1)
 

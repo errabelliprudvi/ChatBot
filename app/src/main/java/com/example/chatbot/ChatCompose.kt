@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -20,9 +19,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -67,7 +63,6 @@ import java.time.LocalDateTime
 import androidx.compose.runtime.*
 
 import androidx.lifecycle.asFlow
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -155,7 +150,7 @@ val username:String = viewModel.userName.value.toString()
                     modifier = Modifier.fillMaxWidth(1f),
                     color = Color.Black,
                     fontSize = TextUnit(25f, TextUnitType.Sp),
-                    fontFamily = FontFamily.Cursive,
+                    fontFamily = FontFamily.Default,
                     maxLines =1,
 
                     )
@@ -215,7 +210,7 @@ fun InChatBubble(ms: CMessage){
         Text(
             ms.msg,
             color = Color.Black,
-            fontSize = TextUnit(25f, TextUnitType.Sp),
+            fontSize = TextUnit(15f, TextUnitType.Sp),
             modifier = Modifier
                 .background(
                     Color.Cyan,
@@ -223,8 +218,8 @@ fun InChatBubble(ms: CMessage){
                 )
                 .padding(start = 25.dp, end = 15.dp, top = 5.dp, bottom = 5.dp),
             textAlign = TextAlign.Left,
-            fontFamily = FontFamily.Cursive ,
-            lineHeight = TextUnit(30f, TextUnitType.Sp) )
+            fontFamily = FontFamily.Default ,
+            lineHeight = TextUnit(20f, TextUnitType.Sp) )
 
     }
 
@@ -240,7 +235,7 @@ fun OutChatBubble(s:CMessage){
         Text(
             s.msg,
             color = Color.Black,
-            fontSize = TextUnit(25f, TextUnitType.Sp),
+            fontSize = TextUnit(15f, TextUnitType.Sp),
             modifier = Modifier
                 .background(
                     PurpleGrey80,
@@ -248,8 +243,8 @@ fun OutChatBubble(s:CMessage){
                 )
                 .padding(start = 15.dp, end = 25.dp, top = 5.dp, bottom = 5.dp),
             textAlign = TextAlign.Left,
-            fontFamily = FontFamily.Cursive,
-            lineHeight = TextUnit(30f, TextUnitType.Sp)
+            fontFamily = FontFamily.Default,
+            lineHeight = TextUnit(20f, TextUnitType.Sp)
         )
     }
 }
@@ -326,6 +321,7 @@ fun ChatFooter() {
                                 it,
                                 CMessage(text, "text", LocalDateTime.now(), 1)
                             )
+                            DbOperations.insertMs(it,CMessage(text, "text", LocalDateTime.now(), 1))
                         }
                         text = ""
                     }
@@ -375,6 +371,7 @@ fun ChatFooter() {
                                     it,
                                     CMessage(text, "text", LocalDateTime.now(), 1)
                                 )
+                                DbOperations.insertMs(it,CMessage(text, "text", LocalDateTime.now(), 1))
                             }
                             text = ""
                         }

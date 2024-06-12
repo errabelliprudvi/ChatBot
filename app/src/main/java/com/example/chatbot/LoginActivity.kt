@@ -32,6 +32,7 @@ class LoginActivity : ComponentActivity() {
                         with(sharedPref.edit()) {
                             putString("UserNumber", email)
                             putString("password", password)
+                            putString("serverAddress","ws://43.205.24.69:8080/WebChat/chat")
                             apply()
                         }
 

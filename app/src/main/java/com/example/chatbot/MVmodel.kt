@@ -1,5 +1,6 @@
 package com.example.chatbot
 
+import android.app.Application
 import android.bluetooth.BluetoothDevice
 import android.os.Build
 import android.util.Log
@@ -9,11 +10,9 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.processNextEventInCurrentThread
 import kotlinx.coroutines.withContext
 import java.io.BufferedReader
 import java.io.IOException
@@ -49,6 +48,7 @@ class MVmodel: ViewModel() {
     }*/
 
     companion object {
+
 
 
         private const val SERVER_ADDRESS = "13.200.235.181"
@@ -118,6 +118,7 @@ class MVmodel: ViewModel() {
         }
 
          fun addDisplayUser(user: String) {
+
             _displayUsers.add(user)
             Log.e(TAG, "new user added")
         }

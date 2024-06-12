@@ -4,4 +4,5 @@
     <string name="dog_content_description">dddd</string>
     <string name="title_activity_chat">ChatActivity</string>
     <string name="title_activity_login">LoginActivity</string>
+    <string name="server_Address">"13.233.102.119"</string>
 </resources>

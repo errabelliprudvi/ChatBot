@@ -98,7 +98,7 @@ fun LoginScreen(onLoginSuccess: (String, String) -> Unit) {
 
         if (isLoading) {
             LaunchedEffect(isLoading) {
-                val sharedPref = context.getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
+                val sharedPref = context.getSharedPreferences("ChatBot", Context.MODE_PRIVATE)
                 with(sharedPref.edit()) {
                     putString("key", "value")
                     apply()

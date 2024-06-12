@@ -10,7 +10,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import okhttp3.*
 import okio.ByteString
-import java.net.Socket
 import java.time.LocalDateTime
 
 class MyWebSocketListener (): WebSocketListener() {
@@ -49,9 +48,12 @@ class MyWebSocketListener (): WebSocketListener() {
 
                     // MVmodel.addMessage(CMessage(lst[1], "text", LocalDateTime.now(), 0))
                     MVmodel.addMessageMap(user, CMessage(lst[1], "text", LocalDateTime.now(), 0))
+                    DbOperations.insertMs(user,CMessage(lst[1], "text", LocalDateTime.now(), 0))
 
                     if (!MVmodel.displayUsers.contains(user)) {
                         MVmodel.addDisplayUser(user)
+                        DbOperations.insertUser(user)
+
                     }
                     if(MVmodel.userName.value!=user){
                         MVmodel.increaseUnSeenMessageCount(user)

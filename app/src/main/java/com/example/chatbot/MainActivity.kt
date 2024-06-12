@@ -19,6 +19,7 @@ import okhttp3.WebSocket
 class MainActivity : ComponentActivity() {
     private  lateinit var webSocketClient: WebSocketClient
    private lateinit var adminuser: String
+   private lateinit var dbOperations: DbOperations
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -28,6 +29,7 @@ class MainActivity : ComponentActivity() {
 
         // Check if email and password are stored in SharedPreferences
         val sharedPref = getSharedPreferences("ChatBot", Context.MODE_PRIVATE)
+        val serverAddress =sharedPref.getString("serverAddress",null)
         val userName = sharedPref.getString("UserNumber", null)
         val password = sharedPref.getString("password", null)
         Log.d("MainActivity",userName.toString())
@@ -36,6 +38,7 @@ class MainActivity : ComponentActivity() {
             val intent = Intent(this, LoginActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
+
             startActivity(intent)
             finish()
             return
@@ -57,9 +60,16 @@ class MainActivity : ComponentActivity() {
       adminuser = userName.trim()
         
         //mainViewModel.load(userName.trim())
+        dbOperations = DbOperations(applicationContext)
+        DbOperations.fetchUsers()
+        DbOperations.fetchMs()
 
         webSocketClient =WebSocketClient(MyWebSocketListener())
-        webSocketClient.connect("ws://13.200.235.181:8080/WebChat/chat")
+        Log.d("mainActivity" , serverAddress.toString())
+        if (serverAddress != null) {
+            Log.d("mainActivity" ,serverAddress)
+            webSocketClient.connect(serverAddress)
+        }
 
 
     }
@@ -72,7 +82,7 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
-        MVmodel.adduserName(adminuser)
+         MVmodel.adduserName(adminuser)
         super.onResume()
     }
 }
