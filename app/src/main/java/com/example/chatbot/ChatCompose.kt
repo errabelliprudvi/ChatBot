@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 
+
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -63,6 +64,7 @@ import java.time.LocalDateTime
 import androidx.compose.runtime.*
 
 import androidx.lifecycle.asFlow
+import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -86,6 +88,8 @@ fun MiddleContainerDemo(modifier: Modifier){
     val viewModel =MVmodel
     val messagesLiveData = viewModel.messagesHandler[viewModel.userName.value]
     var messagesState by remember { mutableStateOf<List<CMessage>>(emptyList()) }
+    var date1 = LocalDateTime.now().toLocalDate()
+
 
     //val scrollState = rememberScrollState()
 
@@ -97,11 +101,183 @@ fun MiddleContainerDemo(modifier: Modifier){
 
     Column(modifier =modifier) {
         messagesState.forEach {
-            if(it.inROut==0){InChatBubble(it)}else{ OutChatBubble(it) }
+            if(messagesState[0]==it){
+                MVmodel.prems =2
+                DaysLbel(s = it)
+                date1 = it.date.toLocalDate()
+            }
+            val result1 = date1.compareTo(it.date.toLocalDate())
+            if(result1!=0){
+            DaysLbel(s = it)
+                date1 = it.date.toLocalDate()
+            }
+
+            if(it.inROut==0){
+                if(MVmodel.prems==0) {
+                    InChatBubble(it)
+                }else{
+                    InChatBubbleF(it)
+                }
+            }else{
+                if(MVmodel.prems==1) {
+                    OutChatBubble(it)
+                }else{
+                    OutChatBubbleF(it)
+                }
+
+            }
+            MVmodel.prems = it.inROut
         }
         Log.e("Bluetooth", "MiddleContainer")
     }
 
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun InChatBubbleF(s: CMessage) {
+    val formatter = DateTimeFormatter.ofPattern("hh:mm a")
+    val time = s.date.format(formatter)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(1f)
+            .padding(end = 90.dp, top = 2.dp, bottom = 2.dp),
+        horizontalArrangement = Arrangement.Absolute.Left
+    ) {
+        Box(contentAlignment = Alignment.BottomStart) {
+
+            Text(
+                s.msg,
+                color = Color.Black,
+                fontSize = TextUnit(15f, TextUnitType.Sp),
+                modifier = Modifier
+                    .background(
+                        Color.Cyan,
+                        RoundedCornerShape(topEnd = 20.dp, bottomStart = 20.dp, bottomEnd = 20.dp)
+                    )
+                    .padding(start = 10.dp, end = 45.dp, top = 5.dp, bottom = 10.dp),
+                textAlign = TextAlign.Left,
+                fontFamily = FontFamily.Default,
+                lineHeight = TextUnit(20f, TextUnitType.Sp)
+            )
+
+            Text(
+                time,
+                modifier = Modifier
+                    .padding(start = 10.dp, end = 15.dp),
+                color = Color.Black,
+                fontSize = TextUnit(10f, TextUnitType.Sp),
+                textAlign = TextAlign.End,
+                fontFamily = FontFamily.Default,
+                lineHeight = TextUnit(10f, TextUnitType.Sp)
+            )
+
+
+        }
+    }
+}
+
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun DaysLbel(s: CMessage) {
+    val formatter = DateTimeFormatter.ofPattern("yyyy MMMM dd")
+    val time = s.date.format(formatter)
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(1f)
+            .padding(5.dp),
+        horizontalArrangement = Arrangement.Center
+    ) {
+
+
+            Text(
+                time,
+                color = MaterialTheme.colorScheme.background,
+                fontSize = TextUnit(15f, TextUnitType.Sp),
+                modifier = Modifier
+                    .background(
+                        MaterialTheme.colorScheme.onBackground,
+                        RoundedCornerShape(
+                            topEnd = 20.dp,
+                            bottomStart = 20.dp,
+                            bottomEnd = 20.dp,
+                            topStart = 20.dp
+                        )
+                    )
+                    .padding(10.dp),
+                textAlign = TextAlign.Center,
+                fontFamily = FontFamily.Default,
+                lineHeight = TextUnit(20f, TextUnitType.Sp)
+            )
+
+
+
+
+        }
+    }
+
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun OutChatBubbleF(s: CMessage) {
+    val formatter = DateTimeFormatter.ofPattern("hh:mm a")
+    val time = s.date.format(formatter)
+
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(1f)
+            .padding(start = 90.dp, top = 2.dp, bottom = 2.dp),
+        horizontalArrangement = Arrangement.Absolute.Right
+    ) {
+
+        Box(contentAlignment = Alignment.BottomEnd) {
+
+            Text(
+                s.msg,
+                color = Color.Black,
+                fontSize = TextUnit(15f, TextUnitType.Sp),
+                modifier = Modifier
+                    .background(
+                        PurpleGrey80,
+                        RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp, topStart = 20.dp)
+                    )
+                    .padding(start = 15.dp, end = 40.dp, top = 5.dp, bottom = 10.dp),
+                textAlign = TextAlign.Left,
+                fontFamily = FontFamily.Default,
+                lineHeight = TextUnit(20f, TextUnitType.Sp)
+            )
+
+
+
+            Text(
+                time,
+                modifier = Modifier
+                    .padding(top = 20.dp, end = 15.dp),
+                color = Color.Black,
+                fontSize = TextUnit(10f, TextUnitType.Sp),
+                textAlign = TextAlign.End,
+                fontFamily = FontFamily.Default,
+                lineHeight = TextUnit(10f, TextUnitType.Sp)
+            )
+            Image(
+                painter = painterResource(id = R.drawable.doublecheckmark),
+
+                modifier = Modifier
+                    .padding(top = 0.dp, end = 15.dp, bottom = 15.dp)
+                    .size(17.dp)
+                    .clickable {
+                    },
+                contentDescription = stringResource(id = R.string.dog_content_description)
+            )
+
+
+        }
+    }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -199,55 +375,127 @@ val username:String = viewModel.userName.value.toString()
 
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun InChatBubble(ms: CMessage){
+fun InChatBubble(s: CMessage){
+    val formatter = DateTimeFormatter.ofPattern("hh:mm a")
+    val time = s.date.format(formatter)
+
     Row(
         modifier = Modifier
             .fillMaxWidth(1f)
             .padding(end = 90.dp, top = 2.dp, bottom = 2.dp),
         horizontalArrangement = Arrangement.Absolute.Left
     ) {
-        Text(
-            ms.msg,
-            color = Color.Black,
-            fontSize = TextUnit(15f, TextUnitType.Sp),
-            modifier = Modifier
-                .background(
-                    Color.Cyan,
-                    RoundedCornerShape(topEnd = 50.dp, bottomStart = 50.dp, bottomEnd = 50.dp)
-                )
-                .padding(start = 25.dp, end = 15.dp, top = 5.dp, bottom = 5.dp),
-            textAlign = TextAlign.Left,
-            fontFamily = FontFamily.Default ,
-            lineHeight = TextUnit(20f, TextUnitType.Sp) )
+        Box(contentAlignment = Alignment.BottomStart) {
 
+            Text(
+                s.msg,
+                color = Color.Black,
+                fontSize = TextUnit(15f, TextUnitType.Sp),
+                modifier = Modifier
+                    .background(
+                        Color.Cyan,
+                        RoundedCornerShape(
+                            topEnd = 20.dp,
+                            bottomStart = 20.dp,
+                            bottomEnd = 20.dp,
+                            topStart = 20.dp
+                        )
+                    )
+                    .padding(start = 10.dp, end = 45.dp, top = 5.dp, bottom = 10.dp),
+                textAlign = TextAlign.Left,
+                fontFamily = FontFamily.Default,
+                lineHeight = TextUnit(20f, TextUnitType.Sp)
+            )
+
+            Text(
+                time,
+                modifier = Modifier
+                    .padding(start = 10.dp, end = 15.dp),
+                color = Color.Black,
+                fontSize = TextUnit(10f, TextUnitType.Sp),
+                textAlign = TextAlign.End,
+                fontFamily = FontFamily.Default,
+                lineHeight = TextUnit(10f, TextUnitType.Sp)
+            )
+
+
+        }
     }
 
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun OutChatBubble(s:CMessage){
-    Row (modifier = Modifier
-        .fillMaxWidth(1f)
-        .padding(start = 90.dp, top = 2.dp, bottom = 2.dp),
-        horizontalArrangement = Arrangement.Absolute.Right){
-        Text(
-            s.msg,
-            color = Color.Black,
-            fontSize = TextUnit(15f, TextUnitType.Sp),
-            modifier = Modifier
-                .background(
-                    PurpleGrey80,
-                    RoundedCornerShape(bottomStart = 50.dp, bottomEnd = 50.dp, topStart = 50.dp)
-                )
-                .padding(start = 15.dp, end = 25.dp, top = 5.dp, bottom = 5.dp),
-            textAlign = TextAlign.Left,
-            fontFamily = FontFamily.Default,
-            lineHeight = TextUnit(20f, TextUnitType.Sp)
-        )
+fun OutChatBubble(s:CMessage) {
+    val formatter = DateTimeFormatter.ofPattern("hh:mm a")
+    val time = s.date.format(formatter)
+
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(1f)
+            .padding(start = 90.dp, top = 2.dp, bottom = 2.dp),
+        horizontalArrangement = Arrangement.Absolute.Right
+    ) {
+
+        Box(contentAlignment = Alignment.BottomEnd) {
+
+            Text(
+                s.msg,
+                color = Color.Black,
+                fontSize = TextUnit(15f, TextUnitType.Sp),
+                modifier = Modifier
+                    .background(
+                        PurpleGrey80,
+                        RoundedCornerShape(
+                            bottomStart = 20.dp,
+                            bottomEnd = 20.dp,
+                            topStart = 20.dp,
+                            topEnd = 20.dp
+                        )
+                    )
+                    .padding(start = 15.dp, end = 40.dp, top = 5.dp, bottom = 10.dp),
+                textAlign = TextAlign.Left,
+                fontFamily = FontFamily.Default,
+                lineHeight = TextUnit(20f, TextUnitType.Sp)
+            )
+
+
+
+            Text(
+                time,
+                modifier = Modifier
+                    .padding(start = 20.dp, end = 15.dp),
+                color = Color.Black,
+                fontSize = TextUnit(10f, TextUnitType.Sp),
+                textAlign = TextAlign.End,
+                fontFamily = FontFamily.Default,
+                lineHeight = TextUnit(10f, TextUnitType.Sp)
+            )
+            Image(
+                painter = painterResource(id = R.drawable.doublecheckmark),
+
+                modifier = Modifier
+                    .padding(top = 0.dp, end = 15.dp, bottom = 15.dp)
+                    .size(17.dp)
+                    .clickable {
+                    },
+                contentDescription = stringResource(id = R.string.dog_content_description)
+            )
+
+
+        }
     }
-}
+    }
+
+
+
+
+
+
 
 
 
@@ -359,10 +607,13 @@ fun ChatFooter() {
                     .size(25.dp)
                     // .clip(CircleShape)
                     .clickable {
-                        if(text.trim().isNotEmpty()) {
+                        if (text
+                                .trim()
+                                .isNotEmpty()
+                        ) {
                             viewModel.userName.value?.let { Log.d("ChatSend.....UserName", it) }
                             viewModel.userName.value?.let {
-                               // viewModel.sendMessage("$it:$text")
+                                // viewModel.sendMessage("$it:$text")
                                 MyWebSocketListener.sendMes("$it:$text")
                             }
                             // MVmodel.addMessage(CMessage(text, "text", LocalDateTime.now(), 1))
@@ -371,7 +622,10 @@ fun ChatFooter() {
                                     it,
                                     CMessage(text, "text", LocalDateTime.now(), 1)
                                 )
-                                DbOperations.insertMs(it,CMessage(text, "text", LocalDateTime.now(), 1))
+                                DbOperations.insertMs(
+                                    it,
+                                    CMessage(text, "text", LocalDateTime.now(), 1)
+                                )
                             }
                             text = ""
                         }

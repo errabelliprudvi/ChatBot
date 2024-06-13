@@ -85,6 +85,7 @@ class MVmodel: ViewModel() {
         var deviceList: List<BluetoothDevice> = _deviceList
         val dpStatus: LiveData<Boolean> get() = _dpStatus
         val userName: LiveData<String> get() = _userName
+        var prems :Int =2
 
         fun load(user:String){
             if (!isSocketInitialized) {

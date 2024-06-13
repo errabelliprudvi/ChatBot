@@ -88,7 +88,7 @@ Text(text = "ChatBot",
     modifier= Modifier
         .weight(.2f)
         .padding(start = 5.dp),
-    color = Color.Black,
+    color = MaterialTheme.colorScheme.background,
     fontSize = TextUnit(30f, TextUnitType.Sp),
     fontFamily = FontFamily.Default,
     fontWeight = FontWeight.Bold,
@@ -318,7 +318,7 @@ fun UserDetailsBox(str:String){
         .height(70.dp)
         .padding(5.dp)
         .fillMaxWidth(1f)
-        .background(Detail, RoundedCornerShape(5.dp)),
+        .background(MaterialTheme.colorScheme.onBackground, RoundedCornerShape(5.dp)),
         verticalAlignment = Alignment.CenterVertically
 
         ) {
@@ -344,7 +344,7 @@ fun UserDetailsBox(str:String){
                     intent.putExtra("UserName", str.trim())
                     context.startActivity(intent)
                 },
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.background,
             textAlign = TextAlign.Left,
             fontSize = TextUnit(30f, TextUnitType.Sp),
             fontFamily = FontFamily.Default,
@@ -361,7 +361,7 @@ fun UserDetailsBox(str:String){
                         .padding(start = 5.dp),
                     color = Color.Black,
                     fontSize = TextUnit(20f, TextUnitType.Sp),
-                    fontFamily = FontFamily.Cursive,
+                    fontFamily = FontFamily.Default,
                     fontWeight = FontWeight.Bold,
                     maxLines =1)
             }
